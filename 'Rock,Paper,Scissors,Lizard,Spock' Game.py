@@ -1,36 +1,36 @@
 import random
 
 # Global variables
-CHOICES = {'rock': 1, 'paper': 2, 'scissors': 3, 'spock': 4, 'lizard': 5}
+CHOICES = {1: 'rock', 2: 'paper', 3: 'scissors', 4: 'spock', 5: 'lizard'}
 RULES = {
-        'rock': ['scissors', 'lizard'],   # rock crushes scissors & lizard
-        'paper': ['rock', 'spock'],       # paper covers rock & disproves Spock
-        'scissors': ['paper', 'lizard'],  # scissors cuts paper & decapitates lizard
-        'lizard': ['paper', 'spock'],     # lizard eats paper & poisons Spock
-        'spock': ['rock', 'scissors']     # Spock vaporizes rock & smashes scissors
-        }
-PLAY_AGAIN = True
+    'rock': ('scissors', 'lizard'),  # rock crushes scissors & lizard
+    'paper': ('rock', 'spock'),  # paper covers rock & disproves Spock
+    'scissors': ('paper', 'lizard'),  # scissors cuts paper & decapitates lizard
+    'lizard': ('paper', 'spock'),  # lizard eats paper & poisons Spock
+    'spock': ('rock', 'scissors')  # Spock vaporizes rock & smashes scissors
+}
 
 
 class Player:
 
-    def __init__(self, name, initial_score=0):
+    def __init__(self, name):
         self.name = name
-        self.score = initial_score
+        self.score = 0
 
     def make_a_move(self, choice):
-        move = {key for key, value in CHOICES.items() if value == choice}
-        print('Player {} choice: {}'.format(self.name,', '.join(map(str, move))))
-        return ', '.join(map(str, move))
+        if not choice in CHOICES:
+            raise ValueError("Invalid choice")
+        move = CHOICES.get(choice)
+        print('Player {} choice: {}'.format(self.name, move))
+        return move
 
     def add_score(self):
         self.score += 1
 
 
 class User(Player):
-    def __init__(self, name, initial_score=0):
-        self.name = name
-        Player.score = initial_score
+    def __init__(self, name):
+        super().__init__(name)
         print('Player {} created!'.format(self.name))
 
     def make_a_choice(self):
@@ -41,7 +41,7 @@ class User(Player):
             except ValueError:
                 print('That\'s not a number. Please try again.')
             else:
-                if 1 < choice <= 5:
+                if 1 <= choice <= len(CHOICES.keys()):
                     break
                 else:
                     print('Number is out of range. Please try again.')
@@ -53,13 +53,13 @@ class User(Player):
 
 class ComputerPlayer(Player):
 
-    def __init__(self, name='Computer', initial_score=0):
-        self.name = name
-        Player.score = initial_score
+    def __init__(self, name='Computer'):
+        super().__init__(name)
 
     def make_a_choice(self):
-        choice = random.randint(1,5)
+        choice = random.randint(1, 5)
         return choice
+
 
 # FUNCTIONS DEFINITIONS:
 
@@ -99,7 +99,8 @@ def assign_score(player1_choice, player2_choice):
         print('Player {} has {} points'.format(player.name, player.score))
 
 
-def play(play_again):
+def play():
+    play_again = True
     while play_again:
         player1_choice = player1.make_a_move(player1.make_a_choice())
         player2_choice = player2.make_a_move(player2.make_a_choice())
@@ -126,14 +127,14 @@ def results():
     print('Goodbye!')
 
 
-# PLAY AREA -> FUNCTIONS CALL
 welcome_msg()
 rules()
 player1 = User(player_name())
 player2 = ComputerPlayer()
 players = (player1, player2)
 player1.greetings()
-play(PLAY_AGAIN)
+play()
+
 
 
 
